@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="MyParCoach gives every golfer a personal par for each hole based on their handicap. Play to your par, not the course par. Free scorecard app with 5,000+ courses worldwide.">
+<meta property="og:title" content="MyParCoach — Your Par. Your Goals. Your Round.">
+<meta property="og:description" content="Stop chasing a par that was never written for you. MyParCoach gives every golfer a realistic hole-by-hole target. Free. 5,000+ courses.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://myparcoach.com">
+<meta name="theme-color" content="#1a2e1a">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⛳</text></svg>">
+<title>MyParCoach — Your Par. Your Goals. Your Round.</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green-deep:  #1a2e1a;
+    --green-mid:   #2d4a2d;
+    --green-light: #4a7c4a;
+    --green-pale:  #6b9e6b;
+    --gold:        #c9a84c;
+    --gold-light:  #e8c96a;
+    --cream:       #f5f0e8;
+    --cream-dark:  #e8e2d8;
+    --text-dark:   #1a1a1a;
+    --text-mid:    #3a3a3a;
+    --text-light:  #7a8a7a;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--green-deep);
+    color: var(--cream);
+    overflow-x: hidden;
+  }
+
+  /* ── NAV ────────────────────────────────────────────────── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 48px;
+    background: rgba(26,46,26,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(201,168,76,0.15);
+  }
+  .nav-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    color: var(--cream);
+    letter-spacing: 0.04em;
+    text-decoration: none;
+  }
+  .nav-logo span { color: var(--gold); }
+  .nav-links { display: flex; gap: 32px; align-items: center; }
+  .nav-links a {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-light);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--cream); }
+  .nav-cta {
+    background: var(--gold) !important;
+    color: var(--green-deep) !important;
+    padding: 9px 20px !important;
+    border-radius: 2px;
+    font-weight: 600 !important;
+  }
+  .nav-cta:hover { background: var(--gold-light) !important; }
+
+  /* ── HERO ────────────────────────────────────────────────── */
+  .hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center;
+    padding: 120px 24px 80px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 0%, rgba(201,168,76,0.07) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 40% at 80% 80%, rgba(74,124,74,0.1) 0%, transparent 50%);
+    pointer-events: none;
+  }
+  .hero-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 24px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.2s forwards;
+  }
+  .hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.8rem, 7vw, 6rem);
+    line-height: 1.05;
+    font-weight: 700;
+    color: var(--cream);
+    max-width: 900px;
+    margin-bottom: 28px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.4s forwards;
+  }
+  .hero-title em {
+    font-style: italic;
+    color: var(--gold);
+  }
+  .hero-sub {
+    font-size: 1.1rem;
+    line-height: 1.7;
+    color: rgba(245,240,232,0.75);
+    max-width: 560px;
+    margin-bottom: 48px;
+    font-weight: 300;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.6s forwards;
+  }
+  .hero-actions {
+    display: flex; gap: 16px; flex-wrap: wrap; justify-content: center;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.8s forwards;
+  }
+  .btn-primary {
+    background: var(--gold);
+    color: var(--green-deep);
+    border: none;
+    padding: 16px 36px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 2px;
+    text-decoration: none;
+    display: inline-block;
+    transition: background 0.2s, transform 0.1s;
+  }
+  .btn-primary:hover { background: var(--gold-light); transform: translateY(-1px); }
+  .btn-secondary {
+    background: transparent;
+    color: var(--cream);
+    border: 1px solid rgba(245,240,232,0.3);
+    padding: 15px 32px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 2px;
+    text-decoration: none;
+    display: inline-block;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .btn-secondary:hover { border-color: var(--cream); }
+
+  .hero-note {
+    margin-top: 20px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--text-light);
+    letter-spacing: 0.08em;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 1s forwards;
+  }
+
+  /* ── STAT STRIP ──────────────────────────────────────────── */
+  .stat-strip {
+    background: rgba(45,74,45,0.5);
+    border-top: 1px solid rgba(201,168,76,0.2);
+    border-bottom: 1px solid rgba(201,168,76,0.2);
+    padding: 32px 48px;
+    display: flex; justify-content: center; gap: 64px;
+    flex-wrap: wrap;
+  }
+  .stat-item { text-align: center; }
+  .stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.2rem;
+    color: var(--gold);
+    display: block;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .stat-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-light);
+  }
+
+  /* ── PHILOSOPHY SECTION ──────────────────────────────────── */
+  .section { padding: 100px 24px; }
+  .section-inner { max-width: 1100px; margin: 0 auto; }
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 20px;
+    display: block;
+  }
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.8rem, 4vw, 3rem);
+    line-height: 1.15;
+    margin-bottom: 28px;
+    color: var(--cream);
+  }
+  .section-body {
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: rgba(245,240,232,0.75);
+    max-width: 620px;
+    font-weight: 300;
+  }
+
+  .philosophy {
+    background: var(--green-mid);
+    border-top: 1px solid rgba(201,168,76,0.15);
+    border-bottom: 1px solid rgba(201,168,76,0.15);
+  }
+  .philosophy-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+  }
+  .philosophy-quote {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.3rem, 2.5vw, 1.9rem);
+    line-height: 1.5;
+    font-style: italic;
+    color: var(--cream);
+    border-left: 3px solid var(--gold);
+    padding-left: 28px;
+  }
+  .philosophy-quote strong {
+    font-style: normal;
+    color: var(--gold);
+  }
+
+  /* ── HOW IT WORKS ────────────────────────────────────────── */
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+    margin-top: 60px;
+  }
+  .step {
+    background: rgba(45,74,45,0.4);
+    border: 1px solid rgba(201,168,76,0.15);
+    border-radius: 4px;
+    padding: 36px 28px;
+    position: relative;
+  }
+  .step-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 3rem;
+    color: rgba(201,168,76,0.2);
+    position: absolute;
+    top: 16px; right: 24px;
+    line-height: 1;
+  }
+  .step-icon { font-size: 1.8rem; margin-bottom: 16px; }
+  .step-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.15rem;
+    color: var(--cream);
+    margin-bottom: 10px;
+  }
+  .step-body {
+    font-size: 0.875rem;
+    line-height: 1.7;
+    color: rgba(245,240,232,0.65);
+    font-weight: 300;
+  }
+
+  /* ── SCORECARD PREVIEW ───────────────────────────────────── */
+  .preview-section { background: var(--green-deep); }
+  .scorecard-mock {
+    background: var(--cream);
+    border-radius: 4px;
+    overflow: hidden;
+    max-width: 700px;
+    margin: 48px auto 0;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.4);
+  }
+  .sc-header {
+    background: var(--green-mid);
+    padding: 14px 20px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--cream);
+    letter-spacing: 0.06em;
+  }
+  .sc-header span { color: var(--gold); }
+  .sc-table { width: 100%; border-collapse: collapse; }
+  .sc-table th {
+    background: var(--green-mid);
+    color: var(--cream);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 8px 12px;
+    text-align: center;
+  }
+  .sc-table th.gold { color: var(--gold); }
+  .sc-table td {
+    padding: 10px 12px;
+    text-align: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--text-dark);
+    border-bottom: 1px solid var(--cream-dark);
+  }
+  .sc-table tr:last-child td { border-bottom: none; }
+  .score-cell {
+    background: #fff;
+    border: 1.5px solid var(--cream-dark);
+    border-radius: 3px;
+    padding: 4px 8px;
+    display: inline-block;
+    min-width: 34px;
+  }
+  .score-cell.birdie { background: #d4edda; border-color: #4a7c4a; color: #2d4a2d; }
+  .score-cell.bogey  { background: #fff3cd; border-color: #c9a84c; }
+  .score-cell.par    { background: #fff; }
+  .diff-neg { color: #4a7c4a; font-weight: 700; }
+  .diff-pos { color: #c0392b; font-weight: 700; }
+  .diff-e   { color: var(--text-mid); font-weight: 700; }
+
+  /* ── COACH SECTION ───────────────────────────────────────── */
+  .coach-section { background: var(--green-mid); }
+  .coach-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: start;
+  }
+  .coach-features { list-style: none; margin-top: 28px; }
+  .coach-feature {
+    display: flex; gap: 14px; align-items: flex-start;
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(201,168,76,0.1);
+  }
+  .coach-feature:last-child { border-bottom: none; }
+  .coach-feature-icon { color: var(--gold); font-size: 1rem; margin-top: 1px; flex-shrink: 0; }
+  .coach-feature-text { font-size: 0.9rem; line-height: 1.6; color: rgba(245,240,232,0.8); }
+  .coach-feature-text strong { color: var(--cream); font-weight: 500; }
+
+  .pricing-card {
+    background: rgba(26,46,26,0.6);
+    border: 1px solid rgba(201,168,76,0.3);
+    border-radius: 4px;
+    padding: 40px 36px;
+    text-align: center;
+    position: sticky; top: 120px;
+  }
+  .pricing-free {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 4px;
+  }
+  .pricing-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    color: var(--cream);
+    margin-bottom: 6px;
+  }
+  .pricing-sub {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--text-light);
+    margin-bottom: 28px;
+    line-height: 1.6;
+  }
+  .pricing-divider {
+    border: none;
+    border-top: 1px solid rgba(201,168,76,0.2);
+    margin: 24px 0;
+  }
+  .pricing-amount {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.6rem;
+    color: var(--cream);
+    line-height: 1;
+  }
+  .pricing-amount sup { font-size: 1rem; vertical-align: top; margin-top: 8px; display: inline-block; }
+  .pricing-amount sub { font-size: 0.75rem; color: var(--text-light); }
+  .pricing-items { text-align: left; margin: 24px 0; }
+  .pricing-item {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    color: rgba(245,240,232,0.75);
+    padding: 6px 0;
+    display: flex; gap: 10px; align-items: center;
+  }
+  .pricing-item::before { content: '✓'; color: var(--gold); }
+
+  /* ── COURSES SECTION ─────────────────────────────────────── */
+  .courses-section { background: var(--green-deep); }
+  .course-pills {
+    display: flex; flex-wrap: wrap; gap: 10px;
+    margin-top: 40px;
+  }
+  .course-pill {
+    background: rgba(45,74,45,0.5);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 20px;
+    padding: 7px 16px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.06em;
+    color: rgba(245,240,232,0.7);
+    white-space: nowrap;
+  }
+  .course-pill.highlight {
+    background: rgba(201,168,76,0.12);
+    border-color: rgba(201,168,76,0.4);
+    color: var(--gold);
+  }
+
+  /* ── CTA SECTION ─────────────────────────────────────────── */
+  .cta-section {
+    background: var(--green-mid);
+    text-align: center;
+    padding: 100px 24px;
+    border-top: 1px solid rgba(201,168,76,0.2);
+  }
+  .cta-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    color: var(--cream);
+    margin-bottom: 20px;
+    line-height: 1.15;
+  }
+  .cta-sub {
+    font-size: 1rem;
+    color: rgba(245,240,232,0.65);
+    margin-bottom: 40px;
+    font-weight: 300;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.7;
+  }
+
+  /* ── FOOTER ──────────────────────────────────────────────── */
+  footer {
+    background: var(--green-deep);
+    border-top: 1px solid rgba(201,168,76,0.15);
+    padding: 48px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 40px;
+    align-items: start;
+  }
+  .footer-brand .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    color: var(--cream);
+    margin-bottom: 10px;
+  }
+  .footer-brand .logo span { color: var(--gold); }
+  .footer-tagline {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    color: var(--text-light);
+    line-height: 1.7;
+  }
+  .footer-col-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 14px;
+  }
+  .footer-links { list-style: none; }
+  .footer-links li { margin-bottom: 8px; }
+  .footer-links a {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--text-light);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .footer-links a:hover { color: var(--cream); }
+  .footer-bottom {
+    background: var(--green-deep);
+    border-top: 1px solid rgba(245,240,232,0.06);
+    padding: 20px 48px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .footer-copy {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.58rem;
+    color: var(--text-light);
+    letter-spacing: 0.06em;
+  }
+
+  /* ── ANIMATIONS ──────────────────────────────────────────── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── RESPONSIVE ──────────────────────────────────────────── */
+  @media (max-width: 768px) {
+    nav { padding: 16px 20px; }
+    .nav-links { display: none; }
+    .philosophy-grid, .coach-grid, .steps { grid-template-columns: 1fr; gap: 40px; }
+    .stat-strip { gap: 32px; padding: 28px 20px; }
+    footer { grid-template-columns: 1fr; padding: 40px 20px; }
+    .footer-bottom { flex-direction: column; gap: 10px; padding: 16px 20px; }
+    .section { padding: 64px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="/" class="nav-logo">My<span>Par</span>Coach</a>
+  <div class="nav-links">
+    <a href="#how-it-works">How It Works</a>
+    <a href="#for-coaches">For Coaches</a>
+    <a href="#courses">Courses</a>
+    <a href="https://myparcoach.app" class="nav-cta">Play Free ⛳</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <p class="hero-eyebrow">Introducing MyParCoach</p>
+  <h1 class="hero-title">
+    Course par was written<br>for <em>scratch golfers</em>.<br>Not for you.
+  </h1>
+  <p class="hero-sub">
+    MyParCoach gives every golfer a personal par for each hole based on their handicap. Stay focused. Play your game. Improve every round.
+  </p>
+  <div class="hero-actions">
+    <a href="https://myparcoach.app" class="btn-primary">Try Free — No Download ⛳</a>
+    <a href="#how-it-works" class="btn-secondary">See How It Works</a>
+  </div>
+  <p class="hero-note">Free to play · 5,000+ courses worldwide · No account required</p>
+</section>
+
+<!-- STAT STRIP -->
+<div class="stat-strip">
+  <div class="stat-item">
+    <span class="stat-num">5,000+</span>
+    <span class="stat-label">Courses Worldwide</span>
+  </div>
+  <div class="stat-item">
+    <span class="stat-num">68M</span>
+    <span class="stat-label">Global Golfers</span>
+  </div>
+  <div class="stat-item">
+    <span class="stat-num">$3.99</span>
+    <span class="stat-label">Pro / Month</span>
+  </div>
+  <div class="stat-item">
+    <span class="stat-num">Free</span>
+    <span class="stat-label">For Coaches</span>
+  </div>
+</div>
+
+<!-- PHILOSOPHY -->
+<section class="section philosophy">
+  <div class="section-inner">
+    <div class="philosophy-grid">
+      <div>
+        <span class="section-label">The Problem</span>
+        <h2 class="section-title">Most golfers lose focus by the 4th hole.</h2>
+        <p class="section-body">
+          Course par is set for scratch golfers. When a 16-handicapper walks off the 3rd green having made a 6 on a par 4, they feel like they've already failed. That feeling compounds. By the turn, they've stopped trying.<br><br>
+          It doesn't have to work that way. A 16-handicapper playing to their <em>real</em> targets — a mix of 5s and 4s on the par 4s based on stroke index — can walk off that same 3rd green having matched their par. The round stays alive. The focus stays sharp.
+        </p>
+      </div>
+      <div>
+        <p class="philosophy-quote">
+          "The course par means nothing to a recreational golfer. What matters is whether they're playing <strong>their</strong> game well."
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="section" id="how-it-works">
+  <div class="section-inner">
+    <span class="section-label">How It Works</span>
+    <h2 class="section-title">Your personal scorecard<br>in three steps.</h2>
+    <div class="steps">
+      <div class="step">
+        <span class="step-num">01</span>
+        <div class="step-icon">🔍</div>
+        <h3 class="step-title">Find Your Course</h3>
+        <p class="step-body">Search from 5,000+ courses worldwide. Select your tee. The rating, slope, and hole-by-hole yardages load automatically.</p>
+      </div>
+      <div class="step">
+        <span class="step-num">02</span>
+        <div class="step-icon">🎯</div>
+        <h3 class="step-title">Set Your Target</h3>
+        <p class="step-body">Enter your handicap index or a target score. MyParCoach distributes your MyPar across all 18 holes using stroke index — just like a real handicap system.</p>
+      </div>
+      <div class="step">
+        <span class="step-num">03</span>
+        <div class="step-icon">⛳</div>
+        <h3 class="step-title">Play Your Game</h3>
+        <p class="step-body">Your scorecard shows Hole · Par · Yds · SI · MyPar · Score · vs MyPar. No paper card needed. See your running position after every hole.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SCORECARD PREVIEW -->
+<section class="section preview-section">
+  <div class="section-inner" style="text-align:center">
+    <span class="section-label">The Scorecard</span>
+    <h2 class="section-title">Exactly like a real scorecard.<br>Built around <em>your</em> par.</h2>
+    <div class="scorecard-mock">
+      <div class="sc-header">
+        Pebble Beach Golf Links — Blue Tees &nbsp;·&nbsp; <span>Haven · Hcp 16 · MyPar 88</span>
+      </div>
+      <table class="sc-table">
+        <thead>
+          <tr>
+            <th>Hole</th><th>Par</th><th class="gold">Yds</th><th>SI</th><th class="gold">MyPar</th><th>Score</th><th class="gold">vs MyPar</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td>4</td><td style="color:#4a7c4a;font-weight:600">378</td><td>6</td><td style="color:#c9a84c;font-weight:600">5</td><td><span class="score-cell par">5</span></td><td class="diff-e">E</td></tr>
+          <tr><td>2</td><td>5</td><td style="color:#4a7c4a;font-weight:600">509</td><td>10</td><td style="color:#c9a84c;font-weight:600">6</td><td><span class="score-cell birdie">5</span></td><td class="diff-neg">-1</td></tr>
+          <tr><td>3</td><td>4</td><td style="color:#4a7c4a;font-weight:600">397</td><td>12</td><td style="color:#c9a84c;font-weight:600">5</td><td><span class="score-cell par">5</span></td><td class="diff-neg">-1</td></tr>
+          <tr><td>4</td><td>4</td><td style="color:#4a7c4a;font-weight:600">333</td><td>16</td><td style="color:#c9a84c;font-weight:600">5</td><td><span class="score-cell bogey">6</span></td><td class="diff-e">E</td></tr>
+          <tr><td>5</td><td>3</td><td style="color:#4a7c4a;font-weight:600">189</td><td>14</td><td style="color:#c9a84c;font-weight:600">3</td><td><span class="score-cell par">3</span></td><td class="diff-e">E</td></tr>
+          <tr style="background:#f8f8f5;font-weight:600"><td colspan="2">OUT</td><td style="color:#c9a84c;font-weight:700">3310</td><td>—</td><td style="color:#c9a84c">44</td><td>44</td><td class="diff-e">E</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="margin-top:20px;font-family:'DM Mono',monospace;font-size:0.62rem;color:var(--text-light);letter-spacing:0.08em">Haven is playing to their par on one of the world's hardest courses — and knows it after every hole.</p>
+  </div>
+</section>
+
+<!-- FOR COACHES -->
+<section class="section coach-section" id="for-coaches">
+  <div class="section-inner">
+    <div class="coach-grid">
+      <div>
+        <span class="section-label">For Golf Coaches</span>
+        <h2 class="section-title">Free for coaches.<br>Powerful for your students.</h2>
+        <p class="section-body">
+          When your students play to their MyPar instead of course par, they stay mentally engaged throughout the round. You get better data. They get better results.
+        </p>
+        <ul class="coach-features">
+          <li class="coach-feature">
+            <span class="coach-feature-icon">⛳</span>
+            <span class="coach-feature-text"><strong>Always free for coaches.</strong> No subscription, no credit card, no barriers to adoption.</span>
+          </li>
+          <li class="coach-feature">
+            <span class="coach-feature-icon">📋</span>
+            <span class="coach-feature-text"><strong>Coach Share Reports.</strong> After every round, students can send you a full hole-by-hole breakdown tagged with your coach code.</span>
+          </li>
+          <li class="coach-feature">
+            <span class="coach-feature-icon">🎯</span>
+            <span class="coach-feature-text"><strong>Real course data.</strong> See exactly where students gain and lose strokes against their target — not just their final score.</span>
+          </li>
+          <li class="coach-feature">
+            <span class="coach-feature-icon">📱</span>
+            <span class="coach-feature-text"><strong>No download required.</strong> Works on any phone, any browser. Share a link and students are ready to play.</span>
+          </li>
+        </ul>
+        <a href="mailto:coach@myparcoach.com" class="btn-primary" style="margin-top:32px;display:inline-block">Contact Us for Coaches →</a>
+      </div>
+      <div>
+        <div class="pricing-card">
+          <p class="pricing-free">Player Pricing</p>
+          <h3 class="pricing-title">MyParCoach Pro</h3>
+          <p class="pricing-sub">Everything you need to track your game and share with your coach.</p>
+          <hr class="pricing-divider">
+          <div class="pricing-amount"><sup>$</sup>3<span style="font-size:2rem">.99</span><sub>/month</sub></div>
+          <div class="pricing-items">
+            <div class="pricing-item">Unlimited round saves</div>
+            <div class="pricing-item">Full round history</div>
+            <div class="pricing-item">Unlimited coach reports</div>
+            <div class="pricing-item">PDF round export</div>
+            <div class="pricing-item">Priority course requests</div>
+            <div class="pricing-item">5,000+ courses — always free</div>
+          </div>
+          <hr class="pricing-divider">
+          <p style="font-family:'DM Mono',monospace;font-size:0.6rem;color:var(--text-light);line-height:1.7">Free plan includes 3 saved rounds and full scorecard access. No credit card required to start.</p>
+          <a href="https://myparcoach.app" class="btn-primary" style="width:100%;display:block;margin-top:20px;text-align:center">Start Free →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COURSES -->
+<section class="section courses-section" id="courses">
+  <div class="section-inner">
+    <span class="section-label">Course Database</span>
+    <h2 class="section-title">5,000+ courses and growing.</h2>
+    <p class="section-body">From your local muni to Augusta National. Pebble Beach to Royal County Down. Every course loads with hole-by-hole yardages, rating, slope, and stroke index — all four tee sets included.</p>
+    <div class="course-pills">
+      <span class="course-pill highlight">Pebble Beach Golf Links</span>
+      <span class="course-pill highlight">Augusta National</span>
+      <span class="course-pill highlight">TPC Sawgrass</span>
+      <span class="course-pill highlight">Royal County Down</span>
+      <span class="course-pill highlight">St Andrews Old Course</span>
+      <span class="course-pill">Bethpage Black</span>
+      <span class="course-pill">Pinehurst No. 2</span>
+      <span class="course-pill">Whistling Straits</span>
+      <span class="course-pill">Cabot Cliffs</span>
+      <span class="course-pill">Bandon Dunes</span>
+      <span class="course-pill">Carnoustie</span>
+      <span class="course-pill">Kiawah Ocean Course</span>
+      <span class="course-pill">Kapalua Plantation</span>
+      <span class="course-pill">Royal Portrush</span>
+      <span class="course-pill">Shadow Creek</span>
+      <span class="course-pill highlight">Your local muni</span>
+      <span class="course-pill">+ 4,984 more</span>
+    </div>
+    <p style="margin-top:32px;font-family:'DM Mono',monospace;font-size:0.62rem;color:var(--text-light)">Don't see your course? <a href="https://myparcoach.app" style="color:var(--gold);text-decoration:none">Request it in the app</a> — we add new courses within 48 hours.</p>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="cta-section">
+  <h2 class="cta-title">Your par is waiting.</h2>
+  <p class="cta-sub">No download. No account. Just open the app, find your course, and play your game.</p>
+  <a href="https://myparcoach.app" class="btn-primary" style="font-size:0.8rem;padding:18px 48px">Play Free at myparcoach.app ⛳</a>
+  <p style="margin-top:20px;font-family:'DM Mono',monospace;font-size:0.6rem;color:var(--text-light);letter-spacing:0.08em">Free · No signup required · Works on any device</p>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-brand">
+    <div class="logo">My<span>Par</span>Coach</div>
+    <p class="footer-tagline">
+      Your par. Your goals. Your round.<br>
+      myparcoach.app
+    </p>
+  </div>
+  <div>
+    <p class="footer-col-title">Contact</p>
+    <ul class="footer-links">
+      <li><a href="mailto:hello@myparcoach.com">hello@myparcoach.com</a></li>
+      <li><a href="mailto:coach@myparcoach.com">coach@myparcoach.com</a></li>
+      <li><a href="mailto:courses@myparcoach.com">courses@myparcoach.com</a></li>
+      <li><a href="mailto:support@myparcoach.com">support@myparcoach.com</a></li>
+    </ul>
+  </div>
+  <div>
+    <p class="footer-col-title">Links</p>
+    <ul class="footer-links">
+      <li><a href="https://myparcoach.app">Launch App</a></li>
+      <li><a href="#how-it-works">How It Works</a></li>
+      <li><a href="#for-coaches">For Coaches</a></li>
+      <li><a href="#courses">Course Database</a></li>
+      <li><a href="mailto:hello@myparcoach.com">Get In Touch</a></li>
+    </ul>
+  </div>
+</footer>
+<div class="footer-bottom">
+  <span class="footer-copy">© 2026 MyParCoach. All rights reserved.</span>
+  <span class="footer-copy">Your Par. Your Goals. Your Round.</span>
+</div>
+
+</body>
+</html>
